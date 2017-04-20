@@ -1,9 +1,24 @@
 const nodemailer = require('nodemailer');
-const mailConfig = require('./mailConfig');
+
+require('dotenv').config({silent: true});
+
+const {
+  CLIENTID,
+  CLIENTSECRET,
+  REFRESHTOKEN,
+  USER
+} = process.env
 
 const transporter = nodemailer.createTransport({
   service : 'gmail',
-  auth : mailConfig.oauth
+  auth : {
+    type : 'OAuth2',
+    clientId : CLIENTID,
+    clientSecret : CLIENTSECRET,
+    refreshToken : REFRESHTOKEN,
+    user : USER,
+    //accessToken : 'ya29.GlsyBN1jCcvh96yhTbpJbHfaz7fituGL6ONKGyrEwhimhBg0CTYfVJG7vaHKlkdwN3HGvErxJvzLwwP91YVWzM53B_XHMkkxyitlzrt1v9fzJW9H5Hh7rZuE1je3'
+  }
 });
 
 const sendEmail = exports.sendEmail = (mailOptions, callback) => {
@@ -11,7 +26,7 @@ const sendEmail = exports.sendEmail = (mailOptions, callback) => {
     return callback('Error on options.', new Error('Error: No text or sender email has been added to options sent.'));
 
   if(!mailOptions.from)
-    mailOptions.from = `${mailConfig.config.mainUser} <${mailConfig.config.mainEmail}>`; // change this to default email
+    mailOptions.from = `${process.env.mainUser} <${process.env.mainEmail}>`; // change this to default email
 
   if(!mailOptions.subject)
     mailOptions.subject = 'Do not reply - MangaDB'; // change this to default subject
@@ -21,7 +36,7 @@ const sendEmail = exports.sendEmail = (mailOptions, callback) => {
 
     const send = (err, res) => {
       if(err) return callback('Error', err);
-      
+
       return callback(null, res); // if it gets here, it means it sent the email successfully
     };
 
@@ -35,11 +50,10 @@ const sendMailNewUser = exports.sendMailNewUser = (user, email, callback) => {
   const mailOptions = {
     to : email,
     subject : 'Welcome to MangaDB!',
-    from : `${mailConfig.config.mainUser} <${mailConfig.config.mainEmail}>`,
+    from : `${process.env.mainUser} <${process.env.mainEmail}>`,
     text : `Welcome to MangaDB, ${user}. Welcome!\nYour user is already, successfully registered!!` // change this part with HTML
   };
   sendEmail(mailOptions, callback);
 }
 
-
-// sendMailNewUser('jenky', 'jenky_nolasco@1mail.com', console.log)
+sendMailNewUser('jenky', 'jenky_nolasco@1mail.com', console.log)

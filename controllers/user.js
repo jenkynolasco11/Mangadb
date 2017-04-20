@@ -37,11 +37,6 @@ exports.postUsers = (req, res) => {
         });
         const msg = `New manga reader ${req.body.username} has been added.`;
 
-        // sendMail(username, email, (err, msg) => {
-        //   if(err) throw new Error(msg);
-        //
-        //   else dbHelper.objSave(user, res, msg);
-        // });
         const emailCallback = (err, msg) => {
           if(err) throw new Error(msg);
 
@@ -64,10 +59,6 @@ exports.postUsers = (req, res) => {
           sendMail(userName, email, emailCallback);
 
         });
-
-        // dbHelper.objSave(user, res, msg);
-
-
       } else {
         const msg = 'Invalid E-Mail.';
         dbHelper.resMsg(res, 400, false, msg, null);
